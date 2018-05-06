@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "json-format": "^1.0.1",
     "source-map-support": "^0.5.5"
   }
 }

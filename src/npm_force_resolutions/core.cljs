@@ -1,16 +1,14 @@
 (ns npm-force-resolutions.core
   (:require [cljs.nodejs :as nodejs]
+            [clojure.string :as string]
             [cognitect.transit :as t]))
-
-(defn main [& args]
-  (str "args: " (first args)))
 
 (defn node-slurp [path]
   (let [fs (nodejs/require "fs")]
     (.readFileSync fs path "utf8")))
 
 (defn read-json [path]
-  (t/read (t/reader :json) (node-slurp path)))
+  (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
 
 (defn find-resolutions [folder]
   (let [package-json (read-json (str folder "/package.json"))]
@@ -54,5 +52,22 @@
   (let [package-lock (read-json (str folder "/package-lock.json"))
         resolutions (find-resolutions folder)]
     (patch-all-dependencies resolutions package-lock)))
+
+(defn indent-json [json]
+  (let [json-format (nodejs/require "json-format")]
+    (string/replace
+      (json-format
+        (.parse js/JSON json)
+        (js-obj
+          "type" "space"
+          "size" 2))
+      #"\\\\\^"
+      "^")))
+
+(defn main [& args]
+  (let [folder (or (first args) ".")
+        package-lock (update-package-lock folder)
+        package-lock-json (t/write (t/writer :json-verbose) package-lock)]
+    (print (indent-json package-lock-json))))
 
 (set! *main-cli-fn* main)

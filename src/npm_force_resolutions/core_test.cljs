@@ -5,9 +5,6 @@
                                                 add-dependencies update-package-lock
                                                 fix-existing-dependency]]))
 
-(deftest test-args
-  (is (= (main "foo") "args: foo")))
-
 (deftest test-read-file
   (let [package-lock-file (node-slurp "./src/fixtures/package-lock.json")]
     (is (re-find #"package-lock-fixture-before" package-lock-file))))
