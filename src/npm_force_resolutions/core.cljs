@@ -34,13 +34,25 @@
     (conj (dissoc dependency "version" "resolved" "integrity" "bundled") {"version" (get resolutions key)})
     dependency))
 
+(defn order-map [target]
+  (into (sorted-map-by (fn [key1 key2]
+                         (compare [key1]
+                                  [key2]))) target))
+
+(defn sort-or-remove-map [key dependency]
+  (if (map? (get dependency key))
+    (update dependency key order-map)
+    (dissoc dependency key)))
+
 (defn patch-dependency [resolutions key dependency]
   (if (contains? dependency "requires")
     (->> dependency
         (add-dependencies resolutions)
         (remove-from-requires resolutions)
         (fix-existing-dependency resolutions key)
-        (patch-all-dependencies resolutions))
+        (patch-all-dependencies resolutions)
+        (sort-or-remove-map "dependencies")
+        (sort-or-remove-map "requires"))
     (fix-existing-dependency resolutions key dependency)))
 
 (defn patch-all-dependencies [resolutions package-lock]
@@ -51,7 +63,8 @@
 (defn update-package-lock [folder]
   (let [package-lock (read-json (str folder "/package-lock.json"))
         resolutions (find-resolutions folder)]
-    (patch-all-dependencies resolutions package-lock)))
+    (->> (patch-all-dependencies resolutions package-lock)
+         (sort-or-remove-map "dependencies"))))
 
 (defn indent-json [json]
   (let [json-format (nodejs/require "json-format")]

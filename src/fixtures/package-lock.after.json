@@ -4,6 +4,12 @@
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
+    "acorn": {
+      "version": "5.5.3",
+      "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.5.3.tgz",
+      "integrity": "sha512-jd5MkIUlbbmb07nXH0DT3y7rDVtkzDi4XZOUVWAer8ajmF/DTSSbl5oNFyDOl/OXA33Bl79+ypHhl2pN20VeOQ==",
+      "dev": true
+    },
     "boom": {
       "version": "2.10.1",
       "resolved": "https://registry.npmjs.org/boom/-/boom-2.10.1.tgz",
