@@ -44,6 +44,8 @@
     (update dependency key order-map)
     (dissoc dependency key)))
 
+(declare patch-all-dependencies)
+
 (defn patch-dependency [resolutions key dependency]
   (if (contains? dependency "requires")
     (->> dependency
