@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "clj -m cljs.main --target node --output-to tests.js -c npm-force-resolutions.core-test && node tests.js",
-    "build": "clj -m cljs.main --target node --output-to index.js -c npm-force-resolutions.core"
+    "build": "rm -r out; clj -m cljs.main --target node --output-to index.js -c npm-force-resolutions.core && sed -i -e 's/path\\.resolve(\"\\.\")/__dirname/g' index.js"
   },
+  "bin": "./index.js",
   "author": "",
   "license": "MIT",
   "dependencies": {

@@ -1,5 +1,4 @@
-out
 node_modules
 .cpcache
-index.js*
 tests.js
+src
