@@ -7,6 +7,10 @@
   (let [fs (nodejs/require "fs")]
     (.readFileSync fs path "utf8")))
 
+(defn node-spit [path data]
+  (let [fs (nodejs/require "fs")]
+    (.writeFileSync fs path data)))
+
 (defn read-json [path]
   (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
 
@@ -80,6 +84,6 @@
   (let [folder (or (first args) ".")
         package-lock (update-package-lock folder)
         package-lock-json (t/write (t/writer :json-verbose) package-lock)]
-    (print (indent-json package-lock-json))))
+    (node-spit (str folder "/package-lock.json") (indent-json package-lock-json))))
 
 (set! *main-cli-fn* main)
