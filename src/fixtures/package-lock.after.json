@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "package-lock-fixture-after",
   "version": "1.0.0",
   "lockfileVersion": 1,
   "requires": true,
@@ -47,6 +47,11 @@
             "boom": "2.x.x",
             "cryptiles": "2.x.x",
             "sntp": "1.x.x"
+          },
+          "dependencies": {
+            "hoek": {
+              "version": "4.2.1"
+            }
           }
         },
         "hoek": {
@@ -64,6 +69,11 @@
         "boom": "2.x.x",
         "cryptiles": "2.x.x",
         "sntp": "1.x.x"
+      },
+      "dependencies": {
+        "hoek": {
+          "version": "4.2.1"
+        }
       }
     },
     "hoek": {

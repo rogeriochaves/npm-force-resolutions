@@ -1,0 +1,16 @@
+{
+  "name": "npm-force-resolutions",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "boom": "^2.1.0"
+  },
+  "resolutions": {
+    "hoek": "4.2.1",
+    "example": "1.0.0"
+  }
+}
