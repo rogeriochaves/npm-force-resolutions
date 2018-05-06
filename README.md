@@ -8,6 +8,30 @@ The use case for this is when there is a security vulnerability and you MUST upd
 
 # How to use
 
+First add a field `resolutions` with the dependency version you want to fix to your `package.json`, for example:
+
+```json
+"resolutions": {
+  "hoek": "4.2.1"
+}
+```
+
+Then remove `node_modules` and run `npm-force-resolutions` to patch the `package-lock` file and reinstall dependencies:
+
+```
+rm -r node_modules
+npx npm-force-resolutions
+npm install
+```
+
+To confirm that the right version was installed, use:
+
+```
+npm ls hoek
+```
+
+If your package-lock changes, you may need to run the steps above again.
+
 # Contributing
 
 To build the project from source you'll need to install [clojure](https://clojure.org/guides/getting_started). Then you can run:
