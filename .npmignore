@@ -2,3 +2,5 @@ node_modules
 .cpcache
 tests.js
 src
+index.js-e
+deps.edn
