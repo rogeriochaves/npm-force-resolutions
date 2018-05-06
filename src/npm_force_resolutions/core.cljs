@@ -68,14 +68,11 @@
 
 (defn indent-json [json]
   (let [json-format (nodejs/require "json-format")]
-    (string/replace
-      (json-format
-        (.parse js/JSON json)
-        (js-obj
-          "type" "space"
-          "size" 2))
-      #"\\\\\^"
-      "^")))
+    (-> (.parse js/JSON json)
+        (json-format (js-obj "type" "space"
+                             "size" 2))
+        (string/replace #"\\\\\^" "^")
+        (string/replace #" +\n" ""))))
 
 (defn main [& args]
   (let [folder (or (first args) ".")
