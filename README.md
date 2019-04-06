@@ -4,7 +4,7 @@ This packages modifies package-lock.json to force the installation of specific v
 
 ## WARNING before you start
 
-The use case for this is when there is a security vulnerability and you MUST update a nested dependency otherwise your project would be vulnerable. But this should only be used as a last resource, you should first update your top-level dependencies and fill an issue for them to update the vulnerable sub-dependencies (`npm ls <vulnerable dependency>` can help you with that).
+The use case for this is when there is a security vulnerability and you MUST update a nested dependency otherwise your project would be vulnerable. But this should only be used as a last resource, you should first update your top-level dependencies and file an issue for them to update the vulnerable sub-dependencies (`npm ls <vulnerable dependency>` can help you with that).
 
 # How to use
 
