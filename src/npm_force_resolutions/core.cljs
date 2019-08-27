@@ -13,7 +13,7 @@
 
 (defn node-spit [path data]
   (let [fs (nodejs/require "fs")]
-    (.writeFileSync fs (normalize-path data))))
+    (.writeFileSync fs (normalize-path path) data)))
 
 (defn read-json [path]
   (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
