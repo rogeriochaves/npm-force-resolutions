@@ -15,7 +15,9 @@
       "resolved": "https://registry.npmjs.org/boom/-/boom-2.10.1.tgz",
       "integrity": "sha1-OciRjO/1eZ+D+UkqhI9iWt0Mdm8=",
       "dev": true,
-      "requires": {},
+      "requires": {
+        "hoek": "4.2.1"
+      },
       "dependencies": {
         "hoek": {
           "version": "4.2.1"
@@ -37,7 +39,9 @@
           "version": "2.10.1",
           "bundled": true,
           "dev": true,
-          "requires": {},
+          "requires": {
+            "hoek": "4.2.1"
+          },
           "dependencies": {
             "hoek": {
               "version": "4.2.1"
@@ -52,7 +56,8 @@
           "requires": {
             "boom": "2.x.x",
             "cryptiles": "2.x.x",
-            "sntp": "1.x.x"
+            "sntp": "1.x.x",
+            "hoek": "4.2.1"
           },
           "dependencies": {
             "hoek": {
@@ -74,7 +79,8 @@
       "requires": {
         "boom": "2.x.x",
         "cryptiles": "2.x.x",
-        "sntp": "1.x.x"
+        "sntp": "1.x.x",
+        "hoek": "4.2.1"
       },
       "dependencies": {
         "hoek": {

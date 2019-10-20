@@ -1,7 +1,7 @@
 (ns npm-force-resolutions.core-test
   (:require [cljs.test :refer-macros [deftest is testing run-tests]]
             [npm-force-resolutions.core :refer [main node-slurp read-json find-resolutions
-                                                patch-all-dependencies remove-from-requires
+                                                patch-all-dependencies update-on-requires
                                                 add-dependencies update-package-lock
                                                 fix-existing-dependency]]))
 
@@ -19,28 +19,28 @@
           {"hoek" "4.2.1"
            "example" "1.0.0"}))))
 
-(deftest test-remove-from-require
+(deftest test-updates-from-requires
   (let [resolutions (find-resolutions "./src/fixtures")
         dependency {"requires" {"hoek" "1.0.0"}}
-        updated-dependency (remove-from-requires resolutions dependency)]
+        updated-dependency (update-on-requires resolutions dependency)]
     (is (= updated-dependency
-          {"requires" {}}))))
+          {"requires" {"hoek" "4.2.1"}}))))
 
-(deftest test-remove-requires
+(deftest test-updates-requires
   (let [resolutions (find-resolutions "./src/fixtures")
         package-lock (read-json "./src/fixtures/package-lock.json")
         updated-package-lock (patch-all-dependencies resolutions package-lock)]
-    (is (= {}
+    (is (= {"hoek" "4.2.1"}
           (-> updated-package-lock
             (get "dependencies")
             (get "boom")
             (get "requires"))))))
 
-(deftest test-remove-requires-recursivelly
+(deftest test-updates-requires-recursivelly
   (let [resolutions (find-resolutions "./src/fixtures")
         package-lock (read-json "./src/fixtures/package-lock.json")
         updated-package-lock (patch-all-dependencies resolutions package-lock)]
-    (is (= {}
+    (is (= {"hoek" "4.2.1"}
           (-> updated-package-lock
             (get "dependencies")
             (get "fsevents")

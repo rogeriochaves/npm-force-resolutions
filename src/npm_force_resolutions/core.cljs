@@ -18,12 +18,18 @@
   (let [package-json (read-json (str folder "/package.json"))]
     (get package-json "resolutions")))
 
-(defn remove-from-requires [resolutions dependency]
-  (update dependency "requires" #(apply dissoc % (keys resolutions))))
-
 ; Source: https://stackoverflow.com/questions/1676891/mapping-a-function-on-the-values-of-a-map-in-clojure
 (defn map-vals [f m]
   (apply merge (map (fn [[k v]] {k (f k v)}) m)))
+
+(defn update-on-requires [resolutions dependency]
+  (update dependency "requires"
+    (fn [requires]
+      (map-vals #((fn [key version]
+        (if (contains? resolutions key)
+          (get resolutions key)
+          version)
+      ) %1 %2) requires))))
 
 (defn add-dependencies [resolutions dependency]
   (let [required-dependencies (keys (get dependency "requires"))
@@ -54,7 +60,7 @@
   (if (contains? dependency "requires")
     (->> dependency
         (add-dependencies resolutions)
-        (remove-from-requires resolutions)
+        (update-on-requires resolutions)
         (fix-existing-dependency resolutions key)
         (patch-all-dependencies resolutions)
         (sort-or-remove-map "dependencies")
