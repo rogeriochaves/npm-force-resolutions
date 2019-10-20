@@ -3,17 +3,13 @@
             [clojure.string :as string]
             [cognitect.transit :as t]))
 
-; Source: https://stackoverflow.com/questions/47251719/nodejs-unable-to-read-text-file-having-space-in-file-directory
-(defn normalize-path [path]
-  (.join (.split path /\ /) '\ '))
-
 (defn node-slurp [path]
   (let [fs (nodejs/require "fs")]
-    (.readFileSync fs (normalize-path path) "utf8")))
+    (.readFileSync fs path "utf8")))
 
 (defn node-spit [path data]
   (let [fs (nodejs/require "fs")]
-    (.writeFileSync fs (normalize-path path) data)))
+    (.writeFileSync fs path data)))
 
 (defn read-json [path]
   (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
