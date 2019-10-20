@@ -16,11 +16,17 @@ First add a field `resolutions` with the dependency version you want to fix to y
 }
 ```
 
-Then remove `node_modules` and run `npm-force-resolutions` to patch the `package-lock` file and reinstall dependencies:
+Then add npm-force-resolutions to the preinstall script so that it can patches the `package-lock` file before every `npm install` you run:
+
+```json
+"scripts": {
+  "preinstall": "npx npm-force-resolutions"
+}
+```
+
+Now just run `npm install` as you would normally do:
 
 ```
-rm -r node_modules
-npx npm-force-resolutions
 npm install
 ```
 
