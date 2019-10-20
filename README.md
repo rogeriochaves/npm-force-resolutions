@@ -16,7 +16,7 @@ First add a field `resolutions` with the dependency version you want to fix to y
 }
 ```
 
-Then add npm-force-resolutions to the preinstall script so that it can patches the `package-lock` file before every `npm install` you run:
+Then add npm-force-resolutions to the preinstall script so that it patches the `package-lock` file before every `npm install` you run:
 
 ```json
 "scripts": {
