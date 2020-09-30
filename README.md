@@ -2,9 +2,9 @@
 
 This packages modifies package-lock.json to force the installation of specific version of a transitive dependency (dependency of dependency), similar to yarn's [selective dependency resolutions](https://yarnpkg.com/lang/en/docs/selective-version-resolutions/), but without having to migrate to yarn.
 
-## WARNING before you start
+## ⚠️ WARNING before you start
 
-The use case for this is when there is a security vulnerability and you MUST update a nested dependency otherwise your project would be vulnerable. But this should only be used as a last resource, you should first update your top-level dependencies and file an issue for them to update the vulnerable sub-dependencies (`npm ls <vulnerable dependency>` can help you with that).
+The use case for this package is when there is a security vulnerability and you **MUST** update a nested dependency, otherwise your project would be vulnerable. This should only be used as a last resort. You should first update your top-level dependencies and file an issue for them to update the vulnerable sub-dependencies (`npm ls <vulnerable dependency>` can help you with that).
 
 # How to use
 
