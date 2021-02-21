@@ -33,11 +33,12 @@
 
 (defn add-dependencies [resolutions dependency]
   (let [required-dependencies (keys (get dependency "requires"))
-        new-dependencies (select-keys
-                          (map-vals (fn [k v] {"version" v}) resolutions)
-                          required-dependencies)
-        with-deps (merge-with into dependency {"dependencies" {}})]
-    (update with-deps "dependencies" #(conj % new-dependencies))))
+        new-deps (map-vals (fn [k v] {"version" v})
+                  (select-keys resolutions required-dependencies))
+        dependencies (merge new-deps
+                            (get dependency "dependencies" {})
+                          )]
+    (merge dependency {"dependencies" dependencies})))
 
 (defn fix-existing-dependency [resolutions key dependency]
   (if (contains? resolutions key)

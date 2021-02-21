@@ -1,0 +1,15 @@
+{
+  "name": "npm-force-resolutions",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "sfdx-cli": "7.84.2"
+  },
+  "resolutions": {
+    "axios": "0.19.2"
+  }
+}
