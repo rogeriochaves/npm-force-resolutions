@@ -24,20 +24,18 @@
 
 (defn update-on-requires [resolutions dependency]
   (update dependency "requires"
-    (fn [requires]
-      (map-vals #((fn [key version]
-        (if (contains? resolutions key)
-          (get resolutions key)
-          version)
-      ) %1 %2) requires))))
+          (fn [requires]
+            (map-vals #((fn [key version]
+                          (if (contains? resolutions key)
+                            (get resolutions key)
+                            version)) %1 %2) requires))))
 
 (defn add-dependencies [resolutions dependency]
   (let [required-dependencies (keys (get dependency "requires"))
         new-deps (map-vals (fn [k v] {"version" v})
-                  (select-keys resolutions required-dependencies))
+                           (select-keys resolutions required-dependencies))
         dependencies (merge new-deps
-                            (get dependency "dependencies" {})
-                          )]
+                            (get dependency "dependencies" {}))]
     (merge dependency {"dependencies" dependencies})))
 
 (defn fix-existing-dependency [resolutions key dependency]
@@ -60,18 +58,18 @@
 (defn patch-dependency [resolutions key dependency]
   (if (contains? dependency "requires")
     (->> dependency
-        (add-dependencies resolutions)
-        (update-on-requires resolutions)
-        (fix-existing-dependency resolutions key)
-        (patch-all-dependencies resolutions)
-        (sort-or-remove-map "dependencies")
-        (sort-or-remove-map "requires"))
+         (add-dependencies resolutions)
+         (update-on-requires resolutions)
+         (fix-existing-dependency resolutions key)
+         (patch-all-dependencies resolutions)
+         (sort-or-remove-map "dependencies")
+         (sort-or-remove-map "requires"))
     (fix-existing-dependency resolutions key dependency)))
 
 (defn patch-all-dependencies [resolutions package-lock]
   (update package-lock "dependencies"
-    (fn [dependencies]
-      (map-vals #(patch-dependency resolutions %1 %2) dependencies))))
+          (fn [dependencies]
+            (map-vals #(patch-dependency resolutions %1 %2) dependencies))))
 
 (defn update-package-lock [folder]
   (let [package-lock (read-json (str folder "/package-lock.json"))
