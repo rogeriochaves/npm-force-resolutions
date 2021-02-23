@@ -20,7 +20,9 @@
       },
       "dependencies": {
         "hoek": {
-          "version": "4.2.1"
+          "integrity": "sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==",
+          "version": "4.2.1",
+          "resolved": "https://registry.npmjs.org/hoek/-/hoek-4.2.1.tgz"
         }
       }
     },
@@ -44,7 +46,9 @@
           },
           "dependencies": {
             "hoek": {
-              "version": "4.2.1"
+              "integrity": "sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==",
+              "version": "4.2.1",
+              "resolved": "https://registry.npmjs.org/hoek/-/hoek-4.2.1.tgz"
             }
           }
         },
@@ -61,12 +65,16 @@
           },
           "dependencies": {
             "hoek": {
-              "version": "4.2.1"
+              "integrity": "sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==",
+              "version": "4.2.1",
+              "resolved": "https://registry.npmjs.org/hoek/-/hoek-4.2.1.tgz"
             }
           }
         },
         "hoek": {
+          "integrity": "sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==",
           "version": "4.2.1",
+          "resolved": "https://registry.npmjs.org/hoek/-/hoek-4.2.1.tgz",
           "dev": true
         }
       }
@@ -84,12 +92,16 @@
       },
       "dependencies": {
         "hoek": {
-          "version": "4.2.1"
+          "integrity": "sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==",
+          "version": "4.2.1",
+          "resolved": "https://registry.npmjs.org/hoek/-/hoek-4.2.1.tgz"
         }
       }
     },
     "hoek": {
+      "integrity": "sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==",
       "version": "4.2.1",
+      "resolved": "https://registry.npmjs.org/hoek/-/hoek-4.2.1.tgz",
       "dev": true
     }
   }

@@ -1,7 +1,13 @@
 (ns npm-force-resolutions.core
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.nodejs :as nodejs]
+            [cljs-http.client :as http]
+            [cljs.core.async :as async :refer [<! >!]]
             [clojure.string :as string]
-            [cognitect.transit :as t]))
+            [cognitect.transit :as t]
+            [xmlhttprequest :refer [XMLHttpRequest]]))
+
+(set! js/XMLHttpRequest XMLHttpRequest)
 
 (defn node-slurp [path]
   (let [fs (nodejs/require "fs")]
@@ -14,9 +20,36 @@
 (defn read-json [path]
   (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
 
+(defn fetch-resolved-resolution [key version]
+  (go
+    (let [response (<! (http/get (str "https://registry.npmjs.org/" key "/" version)))
+          dist (get-in response [:body :dist])]
+      {key {"version" version
+            "resolved" (get dist :tarball)
+            "integrity" (get dist :integrity)}})))
+
+(defn wait-all [callbacks]
+  (go
+    (let [merged (async/merge callbacks)]
+        (loop [result {}]
+          (if (= (count result) (count callbacks))
+            result
+            (recur (merge result (<! merged))))))))
+
 (defn find-resolutions [folder]
-  (let [package-json (read-json (str folder "/package.json"))]
-    (get package-json "resolutions")))
+  (go
+    (let [package-json (read-json (str folder "/package.json"))
+          resolutions (get package-json "resolutions")
+          callbacks (map
+                      (fn [[k v]] (fetch-resolved-resolution k v))
+                      (seq resolutions))
+          [resolved-resolutions timeout_] (async/alts!
+                                            [(wait-all callbacks)
+                                             (async/timeout 8000)])
+          ]
+      (if resolved-resolutions
+        resolved-resolutions
+        (throw (js/Error. "Timeout trying to fetch resolutions from npm"))))))
 
 ; Source: https://stackoverflow.com/questions/1676891/mapping-a-function-on-the-values-of-a-map-in-clojure
 (defn map-vals [f m]
@@ -27,20 +60,19 @@
           (fn [requires]
             (map-vals #((fn [key version]
                           (if (contains? resolutions key)
-                            (get resolutions key)
+                            (get-in resolutions [key, "version"])
                             version)) %1 %2) requires))))
 
 (defn add-dependencies [resolutions dependency]
   (let [required-dependencies (keys (get dependency "requires"))
-        new-deps (map-vals (fn [k v] {"version" v})
-                           (select-keys resolutions required-dependencies))
+        new-deps (select-keys resolutions required-dependencies)
         dependencies (merge new-deps
                             (get dependency "dependencies" {}))]
     (merge dependency {"dependencies" dependencies})))
 
 (defn fix-existing-dependency [resolutions key dependency]
   (if (contains? resolutions key)
-    (conj (dissoc dependency "version" "resolved" "integrity" "bundled") {"version" (get resolutions key)})
+    (conj (dissoc dependency "version" "resolved" "integrity" "bundled") (get resolutions key))
     dependency))
 
 (defn order-map [target]
@@ -72,10 +104,11 @@
             (map-vals #(patch-dependency resolutions %1 %2) dependencies))))
 
 (defn update-package-lock [folder]
-  (let [package-lock (read-json (str folder "/package-lock.json"))
-        resolutions (find-resolutions folder)]
-    (->> (patch-all-dependencies resolutions package-lock)
-         (sort-or-remove-map "dependencies"))))
+  (go
+    (let [package-lock (read-json (str folder "/package-lock.json"))
+          resolutions (<! (find-resolutions folder))]
+      (->> (patch-all-dependencies resolutions package-lock)
+          (sort-or-remove-map "dependencies")))))
 
 (defn indent-json [json]
   (let [json-format (nodejs/require "json-format")]
@@ -86,9 +119,10 @@
         (string/replace #" +\n" ""))))
 
 (defn main [& args]
-  (let [folder (or (first args) ".")
-        package-lock (update-package-lock folder)
-        package-lock-json (t/write (t/writer :json-verbose) package-lock)]
-    (node-spit (str folder "/package-lock.json") (indent-json package-lock-json))))
+  (go
+    (let [folder (or (first args) ".")
+          package-lock (<! (update-package-lock folder))
+          package-lock-json (t/write (t/writer :json-verbose) package-lock)]
+      (node-spit (str folder "/package-lock.json") (indent-json package-lock-json)))))
 
 (set! *main-cli-fn* main)

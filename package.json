@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "clj -m cljs.main --target node --output-to tests.js -c npm-force-resolutions.core-test && node tests.js",
-    "build": "rm -r out; clj -m cljs.main --target node --output-to index.js -c npm-force-resolutions.core && sed -i -e 's/path\\.resolve(\"\\.\")/__dirname/g' index.js"
+    "build": "clj -m cljs.main --target node --output-to index.js -c npm-force-resolutions.core && sed -i -e 's/path\\.resolve(\"\\.\")/__dirname/g' index.js"
   },
   "bin": "./index.js",
   "author": "rogeriochaves",
   "license": "MIT",
   "dependencies": {
     "json-format": "^1.0.1",
-    "source-map-support": "^0.5.5"
+    "source-map-support": "^0.5.5",
+    "xmlhttprequest": "^1.8.0"
   },
   "repository": {
     "type": "git",
