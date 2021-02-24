@@ -5,7 +5,8 @@
             [cljs.core.async :as async :refer [<! >!]]
             [clojure.string :as string]
             [cognitect.transit :as t]
-            [xmlhttprequest :refer [XMLHttpRequest]]))
+            [xmlhttprequest :refer [XMLHttpRequest]]
+            [child_process :refer [execSync]]))
 
 (set! js/XMLHttpRequest XMLHttpRequest)
 
@@ -20,9 +21,9 @@
 (defn read-json [path]
   (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
 
-(defn fetch-resolved-resolution [key version]
+(defn fetch-resolved-resolution [registry-url key version]
   (go
-    (let [response (<! (http/get (str "https://registry.npmjs.org/" key "/" version)))
+    (let [response (<! (http/get (str registry-url key "/" version)))
           dist (get-in response [:body :dist])]
       {key {"version" version
             "resolved" (get dist :tarball)
@@ -36,12 +37,16 @@
             result
             (recur (merge result (<! merged))))))))
 
+(defn get-registry-url []
+  (.trim (.toString (execSync "npm config get registry"))))
+
 (defn find-resolutions [folder]
   (go
     (let [package-json (read-json (str folder "/package.json"))
           resolutions (get package-json "resolutions")
+          registry-url (get-registry-url)
           callbacks (map
-                      (fn [[k v]] (fetch-resolved-resolution k v))
+                      (fn [[k v]] (fetch-resolved-resolution registry-url k v))
                       (seq resolutions))
           [resolved-resolutions timeout_] (async/alts!
                                             [(wait-all callbacks)
