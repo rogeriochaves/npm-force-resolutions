@@ -77,7 +77,16 @@
 
 (defn fix-existing-dependency [resolutions key dependency]
   (if (contains? resolutions key)
-    (conj (dissoc dependency "version" "resolved" "integrity" "bundled") (get resolutions key))
+    (let [fixed-dep (conj
+                      (dissoc dependency "version" "resolved" "integrity" "bundled")
+                      (get resolutions key))]
+      ; sorts dependency map by stringified values, which seems to match to what npm does
+      ; allowing us to have a more stable package-lock, easier to see the diffs
+      (into
+        (sorted-map-by #(compare
+                          (str (get fixed-dep %1))
+                          (str (get fixed-dep %2))))
+                       fixed-dep))
     dependency))
 
 (defn order-map [target]
