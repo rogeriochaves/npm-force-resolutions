@@ -3,4 +3,3 @@ node_modules
 .cpcache
 index.js*
 tests.js
-.cljs_node_repl
