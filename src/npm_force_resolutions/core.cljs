@@ -22,17 +22,26 @@
   (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
 
 (defn build-dependency-from-dist [version dist]
-  (let [integrity (or (get dist :integrity)
-                      (str "sha1-" (.toString (js/Buffer.from (get dist :shasum) "hex") "base64")))]
-    {"version" version
-     "resolved" (get dist :tarball)
-     "integrity" integrity}))
+  (let [tarball (get dist :tarball)
+        integrity (get dist :integrity)
+        shasum (get dist :shasum)]
+    (if integrity
+      {"version" version
+       "resolved" tarball
+       "integrity" integrity}
+      (if shasum
+        {"version" version
+         "resolved" tarball
+         "integrity" (str "sha1-" (.toString (js/Buffer.from shasum "hex") "base64"))}
+        {"version" version}))))
 
 (defn fetch-resolved-resolution [registry-url key version]
   (go
-    (let [response (<! (http/get (str registry-url key "/" version)))
-          dist (get-in response [:body :dist])]
-      {key (build-dependency-from-dist version dist)})))
+    (if (re-find #"^\d" version) ; we only query the api if it's an exact version, starting with a number
+     (let [response (<! (http/get (str registry-url key "/" version)))
+           dist (get-in response [:body :dist])]
+       {key (build-dependency-from-dist version dist)})
+     {key (build-dependency-from-dist version {})})))
 
 (defn wait-all [callbacks]
   (go

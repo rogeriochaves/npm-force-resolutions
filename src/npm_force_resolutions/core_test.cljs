@@ -44,6 +44,21 @@
             "resolved" "https://artifactory.xpto.com:443/artifactory/api/npm/npm/axios/-/axios-0.21.1.tgz"
             "integrity" "sha1-IlY0gZYvTWvemnbVFu8OXTwJsrg="}))))
 
+(deftest test-skips-integrity-when-no-info-is-available
+  (let [dist {:random "thing"}
+        dependency (build-dependency-from-dist "^0.21.1" dist)]
+    (is (= dependency
+           {"version" "^0.21.1"}))))
+
+(deftest test-fetch-resolved-resolution-unfixed-version
+  (async done
+         (go
+          (let [resolution (<! (fetch-resolved-resolution "https://registry.npmjs.org/" "hoek" "^4.2.1"))]
+            (is (= resolution
+                   {"hoek"
+                    {"version" "^4.2.1"}}))
+            (done)))))
+
 (def hoek-resolution
   {"integrity" "sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA=="
     "version" "4.2.1"
@@ -168,6 +183,15 @@
                 (get "dependencies")
                 (get "axios"))))
         (done)))))
+
+(deftest test-update-package-lock-when-version-is-not-fixed
+  (async done
+         (go
+          (let [expected-package-lock (read-json "./src/fixtures/boom_hoek_up/package-lock.after.json")
+                updated-package-lock (<! (update-package-lock "./src/fixtures/boom_hoek_up"))]
+            (is (= (get expected-package-lock "dependencies")
+                   (get updated-package-lock "dependencies")))
+            (done)))))
 
 (enable-console-print!)
 (run-tests)
