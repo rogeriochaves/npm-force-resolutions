@@ -8,7 +8,8 @@
                                                 patch-all-dependencies update-on-requires
                                                 add-dependencies update-package-lock
                                                 fix-existing-dependency fetch-resolved-resolution
-                                                get-registry-url build-dependency-from-dist]]))
+                                                get-registry-url build-dependency-from-dist
+                                                remove-node-modules-path]]))
 
 (set! js/XMLHttpRequest XMLHttpRequest)
 
@@ -199,6 +200,21 @@
                 updated-package-lock (<! (update-package-lock "./src/fixtures/boom_hoek_up"))]
             (is (= (get expected-package-lock "dependencies")
                    (get updated-package-lock "dependencies")))
+            (done)))))
+
+(deftest test-remove-node-modules-path
+  (is (= (remove-node-modules-path "node_modules/@oclif/color/node_modules/chalk/node_modules/supports-color")
+         "supports-color")))
+
+(deftest test-update-package-lock-packages-on-npm7
+  (async done
+         (go
+          (let [expected-package-lock (read-json "./src/fixtures/npm7/package-lock.after.json")
+                updated-package-lock (<! (update-package-lock "./src/fixtures/npm7"))]
+            (is (= (get expected-package-lock "dependencies")
+                   (get updated-package-lock "dependencies")))
+            (is (= (get expected-package-lock "packages")
+                   (get updated-package-lock "packages")))
             (done)))))
 
 (enable-console-print!)

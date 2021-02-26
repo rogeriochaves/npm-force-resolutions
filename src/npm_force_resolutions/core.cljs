@@ -129,10 +129,23 @@
          (sort-or-remove-map "requires"))
     (fix-existing-dependency resolutions key dependency)))
 
+(defn remove-node-modules-path [key]
+  (string/replace key #".*node_modules/" ""))
+
 (defn patch-all-dependencies [resolutions package-lock]
-  (update package-lock "dependencies"
-          (fn [dependencies]
-            (map-vals #(patch-dependency resolutions %1 %2) dependencies))))
+  (let [updated-dependencies
+        (update package-lock "dependencies"
+                (fn [dependencies]
+                  (map-vals
+                   #(patch-dependency resolutions %1 %2)
+                   dependencies)))]
+    (if (get updated-dependencies "packages")
+      (update updated-dependencies "packages"
+              (fn [dependencies]
+                (map-vals
+                 #(patch-dependency resolutions (remove-node-modules-path %1) %2)
+                 dependencies)))
+      updated-dependencies)))
 
 (defn update-package-lock [folder]
   (go
