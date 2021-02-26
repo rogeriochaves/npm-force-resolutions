@@ -21,13 +21,18 @@
 (defn read-json [path]
   (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
 
+(defn build-dependency-from-dist [version dist]
+  (let [integrity (or (get dist :integrity)
+                      (str "sha1-" (.toString (js/Buffer.from (get dist :shasum) "hex") "base64")))]
+    {"version" version
+     "resolved" (get dist :tarball)
+     "integrity" integrity}))
+
 (defn fetch-resolved-resolution [registry-url key version]
   (go
     (let [response (<! (http/get (str registry-url key "/" version)))
           dist (get-in response [:body :dist])]
-      {key {"version" version
-            "resolved" (get dist :tarball)
-            "integrity" (get dist :integrity)}})))
+      {key (build-dependency-from-dist version dist)})))
 
 (defn wait-all [callbacks]
   (go

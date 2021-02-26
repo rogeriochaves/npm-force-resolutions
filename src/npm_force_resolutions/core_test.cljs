@@ -8,7 +8,7 @@
                                                 patch-all-dependencies update-on-requires
                                                 add-dependencies update-package-lock
                                                 fix-existing-dependency fetch-resolved-resolution
-                                                get-registry-url]]))
+                                                get-registry-url build-dependency-from-dist]]))
 
 (set! js/XMLHttpRequest XMLHttpRequest)
 
@@ -34,6 +34,15 @@
                  "version" "4.2.1"
                  "resolved" "https://registry.npmjs.org/hoek/-/hoek-4.2.1.tgz"}}))
         (done)))))
+
+(deftest test-build-correct-integrity-when-sha512-is-not-available
+  (let [dist {:tarball "https://artifactory.xpto.com:443/artifactory/api/npm/npm/axios/-/axios-0.21.1.tgz"
+              :shasum "22563481962f4d6bde9a76d516ef0e5d3c09b2b8"}
+        dependency (build-dependency-from-dist "0.21.1" dist)]
+    (is (= dependency
+           {"version" "0.21.1"
+            "resolved" "https://artifactory.xpto.com:443/artifactory/api/npm/npm/axios/-/axios-0.21.1.tgz"
+            "integrity" "sha1-IlY0gZYvTWvemnbVFu8OXTwJsrg="}))))
 
 (def hoek-resolution
   {"integrity" "sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA=="
