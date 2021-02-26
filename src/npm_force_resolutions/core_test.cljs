@@ -78,6 +78,14 @@
         (is (= resolutions boom-hoek-resolutions))
         (done)))))
 
+(deftest test-find-resolutions-unfixed
+  (async done
+         (go
+          (let [resolutions (<! (find-resolutions "./src/fixtures/boom_hoek_up"))]
+            (is (= resolutions {"hoek" {"version" "\\^4.2.1"}
+                                "axios" {"version" "\\~0.19.2"}}))
+            (done)))))
+
 (deftest test-updates-from-requires
   (let [dependency {"requires" {"hoek" "1.0.0"}}
         updated-dependency (update-on-requires boom-hoek-resolutions dependency)]

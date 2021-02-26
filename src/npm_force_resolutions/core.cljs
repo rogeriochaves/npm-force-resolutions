@@ -19,7 +19,10 @@
     (.writeFileSync fs path data)))
 
 (defn read-json [path]
-  (t/read (t/reader :json) (string/replace (node-slurp path) #"\^" "\\\\^")))
+  (let [safe-json (-> (node-slurp path)
+                      (string/replace #"\^" "\\\\^")
+                      (string/replace #"\~" "\\\\~"))]
+    (t/read (t/reader :json) safe-json)))
 
 (defn build-dependency-from-dist [version dist]
   (let [tarball (get dist :tarball)
@@ -37,7 +40,7 @@
 
 (defn fetch-resolved-resolution [registry-url key version]
   (go
-    (if (re-find #"^\d" version) ; we only query the api if it's an exact version, starting with a number
+    (if (re-find #"^\d" (str version)) ; we only query the api if it's an exact version, starting with a number
      (let [response (<! (http/get (str registry-url key "/" version)))
            dist (get-in response [:body :dist])]
        {key (build-dependency-from-dist version dist)})
@@ -144,6 +147,7 @@
         (json-format (js-obj "type" "space"
                              "size" 2))
         (string/replace #"\\\\\^" "^")
+        (string/replace #"\\\\\~" "~")
         (string/replace #" +\n" ""))))
 
 (defn main [& args]
