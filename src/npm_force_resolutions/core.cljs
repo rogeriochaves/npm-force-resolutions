@@ -67,7 +67,7 @@
                       (seq resolutions))
           [resolved-resolutions timeout_] (async/alts!
                                             [(wait-all callbacks)
-                                             (async/timeout 8000)])
+                                             (async/timeout 60000)])
           ]
       (if resolved-resolutions
         resolved-resolutions
