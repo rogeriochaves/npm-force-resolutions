@@ -152,7 +152,8 @@
     (let [package-lock (read-json (str folder "/package-lock.json"))
           resolutions (<! (find-resolutions folder))]
       (->> (patch-all-dependencies resolutions package-lock)
-          (sort-or-remove-map "dependencies")))))
+          (sort-or-remove-map "dependencies")
+          (sort-or-remove-map "packages"))))
 
 (defn indent-json [json]
   (let [json-format (nodejs/require "json-format")]
